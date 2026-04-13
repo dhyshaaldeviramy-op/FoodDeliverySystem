@@ -1,6 +1,6 @@
 ﻿namespace FoodDeliverySystem.Models
 {
-    public class FileName
+    public class MenuItem
     {
     }
 }
