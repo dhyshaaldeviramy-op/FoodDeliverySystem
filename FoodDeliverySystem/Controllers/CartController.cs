@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using FoodDeliverySystem.DTOs.Cart;
 using FoodDeliverySystem.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FoodDeliverySystem.Controllers{
    
@@ -16,33 +17,26 @@ namespace FoodDeliverySystem.Controllers{
             _service = service;
         }
 
-        // Add item to cart
-        [HttpPost("add")]
-        public async Task<IActionResult> Add(
-            int userId,
-            int menuItemId,
-            string name,
-            decimal price,
-            int quantity)
+        [HttpPost("add/{userId}")]
+        public async Task<IActionResult> AddToCart(int userId, AddToCartDto dto)
         {
-            await _service.AddToCart(userId, menuItemId, name, price, quantity);
+            await _service.AddToCart(userId, dto);
             return Ok("Item added to cart");
         }
 
-        // Remove item
-        [HttpDelete("remove/{itemId}")]
-        public async Task<IActionResult> Remove(int itemId)
-        {
-            await _service.RemoveFromCart(itemId);
-            return Ok("Item removed");
-        }
-
-        // Get cart
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetCart(int userId)
         {
-            var cart = await _service.GetCart(userId);
-            return Ok(cart);
+            var data = await _service.GetCart(userId);
+            return Ok(data);
         }
+
+        [HttpDelete("{itemId}")]
+        public async Task<IActionResult> RemoveItem(int itemId)
+        {
+            await _service.RemoveItem(itemId);
+            return Ok("Item removed");
+        }
+
     }
 }

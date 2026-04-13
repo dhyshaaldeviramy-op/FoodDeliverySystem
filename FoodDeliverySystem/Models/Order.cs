@@ -10,6 +10,6 @@ namespace FoodDeliverySystem.Models
         public decimal TotalAmount { get; set; }
         public string Status { get; set; } // Pending, Confirmed, Delivered
         public List<OrderItem> Items { get; set; }
-
+        public int DeliveryAgentId { get; internal set; }
     }
 }

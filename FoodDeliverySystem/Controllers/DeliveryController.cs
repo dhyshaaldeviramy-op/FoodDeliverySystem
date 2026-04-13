@@ -1,4 +1,5 @@
-﻿using FoodDeliverySystem.Hubs;
+﻿using FoodDeliverySystem.DTOs.Delivery;
+using FoodDeliverySystem.Hubs;
 using FoodDeliverySystem.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,37 +26,38 @@ namespace FoodDeliverySystem.Controllers
             _hub = hub;
         }
 
-        // Assign agent
-        [HttpPost("assign/{orderId}")]
-        public async Task<IActionResult> AssignAgent(int orderId)
+        // Assign delivery agent
+        [HttpPost("assign")]
+        public async Task<IActionResult> AssignAgent(AssignAgentDto dto)
         {
-            await _deliveryService.AssignAgent(orderId);
+            await _deliveryService.AssignAgent(dto.OrderId);
             return Ok("Agent Assigned");
         }
 
-        // Update location (called by delivery agent app)
+        // Update location (REAL-TIME 🔥)
         [HttpPost("update-location")]
-        public async Task<IActionResult> UpdateLocation(int agentId, double lat, double lng, int orderId)
+        public async Task<IActionResult> UpdateLocation(UpdateLocationDto dto)
         {
-            await _deliveryService.UpdateLocation(agentId, lat, lng);
+            await _deliveryService.UpdateLocation(dto.AgentId, dto.Latitude, dto.Longitude);
 
-            // Send real-time update
+            // Send live update
             await _hub.Clients.All.SendAsync("ReceiveLocation", new
             {
-                OrderId = orderId,
-                Latitude = lat,
-                Longitude = lng
+                OrderId = dto.OrderId,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude
             });
 
-            return Ok();
+            return Ok("Location Updated");
         }
 
-        // Get optimized route
+        // Route optimization
         [HttpGet("route")]
         public async Task<IActionResult> GetRoute(double sLat, double sLng, double dLat, double dLng)
         {
-            var route = await _routeService.GetOptimalRoute(sLat, sLng, dLat, dLng);
+            var route = await _routeService.GetRoute(sLat, sLng, dLat, dLng);
             return Ok(route);
         }
+
     }
 }

@@ -17,23 +17,18 @@ namespace FoodDeliverySystem.Controllers
             _service = service;
         }
 
-        [HttpPost("place")]
+        [HttpPost("{userId}")]
         public async Task<IActionResult> PlaceOrder(int userId)
         {
-            var order = await _service.PlaceOrder(userId);
-            return Ok(order);
+            var result = await _service.PlaceOrder(userId);
+            return Ok(result);
         }
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetOrders(int userId)
         {
-            return Ok(await _service.GetOrders(userId));
-        }
-
-        [HttpGet("details/{orderId}")]
-        public async Task<IActionResult> GetOrder(int orderId)
-        {
-            return Ok(await _service.GetOrderById(orderId));
+            var data = await _service.GetOrders(userId);
+            return Ok(data);
         }
     }
 }

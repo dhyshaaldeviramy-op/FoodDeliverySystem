@@ -1,14 +1,12 @@
-﻿namespace FoodDeliverySystem.Services.Implementations
-{
-    public class RouteService
-    {
-        public async Task<string> GetOptimalRoute(double sourceLat, double sourceLng,
-                                            double destLat, double destLng)
-        {
-            // Normally call Google Maps API here
-            // For now return dummy route
+﻿using FoodDeliverySystem.Services.Interfaces;
 
-            return $"Route from ({sourceLat},{sourceLng}) to ({destLat},{destLng})";
+namespace FoodDeliverySystem.Services.Implementations
+{
+    public class RouteService: IRouteService
+    {
+        public async Task<string> GetRoute(double sLat, double sLng, double dLat, double dLng)
+        {
+            return $"Route from ({sLat},{sLng}) to ({dLat},{dLng})";
         }
     }
 }

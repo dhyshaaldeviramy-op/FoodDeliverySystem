@@ -2,8 +2,7 @@
 {
     public interface IRouteService
     {
-        Task<string> GetOptimalRoute(double sourceLat, double sourceLng,
-                            double destLat, double destLng);
+        Task<string> GetRoute(double sLat, double sLng, double dLat, double dLng);
 
     }
 }

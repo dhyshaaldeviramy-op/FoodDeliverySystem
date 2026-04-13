@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodDeliverySystem.Services.Implementations
 {
+    using FoodDeliverySystem.DTOs.Cart;
     using Microsoft.EntityFrameworkCore;
 
     public class CartService : ICartService
@@ -17,63 +18,57 @@ namespace FoodDeliverySystem.Services.Implementations
             _context = context;
         }
 
-        public async Task AddToCart(int userId, int menuItemId, string name, decimal price, int quantity)
+        public async Task AddToCart(int userId, AddToCartDto dto)
         {
-            if (quantity <= 0)
-                throw new Exception("Quantity must be greater than 0");
-
             var cart = await _context.Carts
                 .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
             {
-                cart = new Cart
-                {
-                    UserId = userId,
-                    Items = new List<CartItem>()
-                };
-
+                cart = new Cart { UserId = userId, Items = new List<CartItem>() };
                 _context.Carts.Add(cart);
             }
 
-            var existingItem = cart.Items
-                .FirstOrDefault(i => i.MenuItemId == menuItemId);
+            var menuItem = await _context.MenuItems.FindAsync(dto.MenuItemId);
 
-            if (existingItem != null)
+            cart.Items.Add(new CartItem
             {
-                existingItem.Quantity += quantity;
-            }
-            else
-            {
-                cart.Items.Add(new CartItem
-                {
-                    MenuItemId = menuItemId,
-                    Name = name,
-                    Price = price,
-                    Quantity = quantity
-                });
-            }
+                MenuItemId = dto.MenuItemId,
+                Quantity = dto.Quantity,
+                Price = menuItem.Price
+            });
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveFromCart(int itemId)
+        public async Task<CartResponseDto> GetCart(int userId)
+        {
+            var cart = await _context.Carts
+                .Include(c => c.Items)
+                .ThenInclude(i => i.MenuItem)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            var items = cart.Items.Select(i => new CartItemDto
+            {
+                MenuItemId = i.MenuItemId,
+                MenuItemName = i.MenuItem.Name,
+                Quantity = i.Quantity,
+                Price = i.Price
+            }).ToList();
+
+            return new CartResponseDto
+            {
+                Items = items,
+                TotalAmount = items.Sum(i => i.Price * i.Quantity)
+            };
+        }
+
+        public async Task RemoveItem(int itemId)
         {
             var item = await _context.CartItems.FindAsync(itemId);
-
-            if (item == null)
-                throw new Exception("Item not found");
-
             _context.CartItems.Remove(item);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<Cart> GetCart(int userId)
-        {
-            return await _context.Carts
-                .Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
         }
     }
 }

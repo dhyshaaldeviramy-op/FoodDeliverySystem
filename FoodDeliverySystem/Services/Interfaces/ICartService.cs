@@ -1,10 +1,11 @@
-﻿using FoodDeliverySystem.Models;
+﻿using FoodDeliverySystem.DTOs.Cart;
+using FoodDeliverySystem.Models;
 namespace FoodDeliverySystem.Services.Interfaces
 {
     public interface ICartService
     {
-        Task AddToCart(int userId, int menuItemId, string name, decimal price, int quantity);
-        Task RemoveFromCart(int itemId);
-        Task<Cart> GetCart(int userId);
+        Task AddToCart(int userId, AddToCartDto dto);
+        Task<CartResponseDto> GetCart(int userId);
+        Task RemoveItem(int itemId);
     }
 }
