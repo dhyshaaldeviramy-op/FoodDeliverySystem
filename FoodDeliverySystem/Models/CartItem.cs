@@ -4,6 +4,7 @@ namespace FoodDeliverySystem.Models
 {
     public class CartItem
     {
+
         [Key]
         public int Id { get; set; }
 
@@ -18,5 +19,6 @@ namespace FoodDeliverySystem.Models
         public int Quantity { get; set; }
 
         public decimal Price { get; set; }
+
     }
 }
