@@ -1,6 +1,6 @@
 ﻿namespace FoodDeliverySystem.Services.Interfaces
 {
-    public class FileName
+    public class IMenuService
     {
     }
 }
